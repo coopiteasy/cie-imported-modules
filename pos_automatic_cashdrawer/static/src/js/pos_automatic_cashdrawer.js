@@ -149,7 +149,7 @@ odoo.define('pos_automatic_cashdrawer.pos_automatic_cashdrawer', function (requi
                                     screen.$('.automatic-cashdrawer-transaction-start').css('display', 'none');
                                 }
                             }
-                            else {
+                            /*else {
                                 // Case #0#b#c#d#e#:
                                 // The return says that an amount was correctly given to the cache machine
                             	alert('case sans error');
@@ -172,7 +172,7 @@ odoo.define('pos_automatic_cashdrawer.pos_automatic_cashdrawer', function (requi
                                     screen.$('.delete-button').css('display', 'none');
                                     screen.$('.automatic-cashdrawer-transaction-start').css('display', 'none');
                                 }
-                            }
+                            }*/
                         }
                     }
                 });
