@@ -19,7 +19,7 @@ try:
     from odoo.addons.hw_escpos.controllers.main import EscposProxy
     from odoo.addons.hw_escpos.controllers.main import EscposDriver
     from odoo.addons.hw_escpos.escpos.printer import Network
-    import odoo.addons.hw_proxy.controllers.main as hw_proxy
+    from odoo.addons.hw_proxy.controllers import main as hw_proxy
 except ImportError:
     EscposProxy = object
     EscposDriver = object
@@ -181,7 +181,7 @@ hw_proxy.drivers["escpos_network"] = network_driver
 network_driver.push_task("printstatus")
 
 
-class UpdatedEscposProxy(EscposProxy):
+class UpdatedEscposProxy(hw_proxy.Proxy):
     @http.route("/hw_proxy/print_xml_receipt", type="json", auth="none", cors="*")
     def print_xml_receipt(self, receipt, proxy=None):
         if proxy:
