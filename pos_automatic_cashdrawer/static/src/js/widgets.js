@@ -417,8 +417,10 @@ odoo.define('pos_automatic_cashdrawer.widgets', function (require) {
         click_confirm: function () {
             var self = this;
             this.pos.proxy.automatic_cashdrawer_stop_acceptance().then(function (value) {
-                if (self.options.to_collect && value > self.options.to_collect) {
+                if (self.options.to_collect && value >= self.options.to_collect) {
                     var change = utils.round_precision(value - self.options.to_collect, self.pos.currency.rounding);
+                    console.log(change);
+                    console.log(self.options.confirm);
                     self.pos.proxy.automatic_cashdrawer_dispense(change).then(function (res) {
                         if (self.options.confirm) {
                             self.options.confirm.call(self, value - change, value, change);
