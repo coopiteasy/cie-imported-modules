@@ -52,7 +52,7 @@ class CashlogyAutomaticCashdrawerDriver(Thread):
                 self.status.get('status') == 'connected' and
                 (time.time() - self._keepalive_tick) >= KEEPALIVE_TIME_LIMIT
             ):
-                _logger.debug('Disconnected because of timeout')
+                _logger.error('Disconnected because of timeout')
                 self.disconnect()
 
     def run(self):
@@ -63,6 +63,7 @@ class CashlogyAutomaticCashdrawerDriver(Thread):
                 try:
                     timestamp, task, data = self.queue.get(False)
                 except Empty:
+                    time.sleep(1)
                     continue
                 # Process tasks
                 if task == 'connect':
@@ -76,7 +77,7 @@ class CashlogyAutomaticCashdrawerDriver(Thread):
                 _logger.error(errmsg)
             except (KeyboardInterrupt, SystemExit):
                 # TODO: Not working as expected..
-                _logger.debug('Shutdown signaled. Shutting down connection..')
+                _logger.error('Shutdown signaled. Shutting down connection..')
                 self.disconnect()
 
     def value_float(self, value):
@@ -97,7 +98,7 @@ class CashlogyAutomaticCashdrawerDriver(Thread):
         return self.status
 
     def set_status(self, status, message=None):
-        _logger.debug('STATUS: %s [%s]' % (status, message))
+        _logger.info('STATUS: %s [%s]' % (status, message))
         if not self.status:
             self.status = {}
         if status == self.status.get('status'):
@@ -203,9 +204,11 @@ class CashlogyAutomaticCashdrawerDriver(Thread):
             try:
                 if blocking:
                     self.socket.settimeout(None)
+                _logger.info('Cashlogy info: %s' % (msg))
                 self.socket.send(msg.encode("utf-8"))
                 res = self.socket.recv(BUFFER_SIZE).decode()
             except Exception as e:
+                _logger.error('Cashlogy error: %s' % (repr(e)))
                 self.set_status('error', repr(e))
                 raise e
             finally:
@@ -240,14 +243,17 @@ class CashlogyAutomaticCashdrawerDriver(Thread):
                 elif isinstance(v, float):
                     msg[i] = str(int(v * 100))
                 else:
-                    _logger.debug('Unrecognized param: %s' % v)
+                    _logger.info('Unrecognized param: %s' % v)
                     msg[i] = str(v)
             msg = '#%s#' % '#'.join(msg)
         res_raw = self._send(msg, blocking=blocking)
+        _logger.info('Cashlogy info: %s (%s)' % (res_raw, msg))
         res = res_raw.strip('#').split('#')
         if len(res) >= 1:
             if res[0].startswith('ER:'):
-                raise Exception(
+                 _logger.error(
+                    'Cashlogy error: %s (%s)' % (res_raw, msg))
+                 raise Exception(
                     'Cashlogy error: %s (%s)' % (res_raw, msg))
             elif res[0].startswith('WR:'):
                 _logger.warning(
@@ -416,7 +422,7 @@ class CashlogyAutomaticCashdrawerProxy(hw_proxy.Proxy):
     def status_json(self):
         '''
         Overload status_json to keep the Cashdrawer connection alive
-        This method is called frecuently by the POS, if there's a session
+        This method is called frequently by the POS, if there's a session
         '''
         driver.keepalive()
         return super(CashlogyAutomaticCashdrawerProxy, self).status_json()
