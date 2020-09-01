@@ -154,6 +154,7 @@ class EscposNetworkDriver(EscposDriver):
                         else:
                             self.start_pinging(ip)
                 error = False
+                time.sleep(1)
             except Exception as e:
                 self.set_status("error", str(e))
                 errmsg = (
