@@ -158,7 +158,7 @@ odoo.define("pos_printer_network.network_printer", function(require) {
                 }
                 params.proxy = this.pos.config.receipt_network_printer_ip;
                 if (this.get("status").status !== "disconnected") {
-                    return connection.rpc("/hw_proxy/" + name, params || {});
+                    return connection.rpc("/hw_proxy/" + name, params || {}, {shadow: true});
                 }
                 return new $.Deferred().reject();
             }
