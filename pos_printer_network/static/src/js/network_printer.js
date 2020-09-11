@@ -114,7 +114,7 @@ odoo.define("pos_printer_network.network_printer", function(require) {
             var self = this;
             function network_printer_status() {
                 self.connection
-                    .rpc("/hw_proxy/status_network_printers", {}, {timeout: 2500})
+                    .rpc("/hw_proxy/status_network_printers", {}, {timeout: 2500, shadow: true})
                     .then(
                         function(status) {
                             if (self.old_network_printer_status !== status) {
