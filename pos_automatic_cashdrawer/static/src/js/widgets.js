@@ -410,7 +410,7 @@ odoo.define('pos_automatic_cashdrawer.widgets', function (require) {
                 if (self.options.to_collect && self.options.auto_accept && self.inputbuffer >= self.options.to_collect) {
                     return self.click_confirm();
                 }
-                self.timer = setTimeout(function () { self.update_counter(); }, 100);
+                self.timer = setTimeout(function () { self.update_counter(); }, 1000);
             });
         },
 
