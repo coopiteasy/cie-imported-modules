@@ -23,16 +23,30 @@ odoo.define('pos_automatic_cashdrawer.devices', function (require) {
             Normally, it starts a keepalive timer that request /hw_proxy/status_json
             But we're also sending the Cashdrawer connection config here.
         */
+    	init: function(parent, options) {
+    		this.automatic_cashdrawer_keptalive = false;
+    		this._super(parent, options);
+    	},
         keepalive: function () {
-            this._super.apply(this, arguments);
-            if (this.pos.config.iface_automatic_cashdrawer) {
-                this.message('cashlogy/connect', {
-                    'config': {
-                        'host': this.pos.config.iface_automatic_cashdrawer_ip_address,
-                        'port': this.pos.config.iface_automatic_cashdrawer_tcp_port
-                    }
-                });
+        	var self = this;
+        	function automatic_cashdrawer_status() {
+	            if (self.pos.config.iface_automatic_cashdrawer) {
+	            	self.message('cashlogy/connect', {
+	                    'config': {
+	                        'host': self.pos.config.iface_automatic_cashdrawer_ip_address,
+	                        'port': self.pos.config.iface_automatic_cashdrawer_tcp_port
+	                    }
+	                })
+	                .always(function() {
+                        setTimeout(automatic_cashdrawer_status, 60000);
+                    });
+	            }
             }
+        	if (!this.automatic_cashdrawer_keptalive) {
+                this.automatic_cashdrawer_keptalive = true;
+                automatic_cashdrawer_status();
+            }
+            this._super();
         },
 
         /*
