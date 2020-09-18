@@ -190,7 +190,8 @@ class CashlogyAutomaticCashdrawerDriver(Thread):
         status = self.status.get('status')
         if (
             config and status == 'disconnected' or
-            force and status not in ['connected', 'connecting']
+            force and status not in ['connected', 'connecting'] or
+            self.socket == None
         ):
             self.lockedstart()
             self.push_task('connect', config)
@@ -418,14 +419,14 @@ hw_proxy.drivers['automatic_cashdrawer'] = driver
 
 class CashlogyAutomaticCashdrawerProxy(hw_proxy.Proxy):
 
-    @http.route()
-    def status_json(self):
-        '''
-        Overload status_json to keep the Cashdrawer connection alive
-        This method is called frequently by the POS, if there's a session
-        '''
-        driver.keepalive()
-        return super(CashlogyAutomaticCashdrawerProxy, self).status_json()
+#     @http.route()
+#     def status_json(self):
+#         '''
+#         Overload status_json to keep the Cashdrawer connection alive
+#         This method is called frequently by the POS, if there's a session
+#         '''
+#         driver.keepalive()
+#         return super(CashlogyAutomaticCashdrawerProxy, self).status_json()
 
     @http.route(
         '/hw_proxy/cashlogy/connect', type='json', auth='none', cors='*')
