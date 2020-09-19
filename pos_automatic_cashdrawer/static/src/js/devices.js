@@ -215,6 +215,24 @@ odoo.define('pos_automatic_cashdrawer.devices', function (require) {
         },
 
         /*
+        Starts acceptance of money
+        @returns 0.00
+	    */
+	    automatic_cashdrawer_start_acceptance: function () {
+	        var self = this;
+	        var done = this.message('cashlogy/start_acceptance');
+	        done.fail(function (error) {
+	            var message = error ? error.data.message : _t('Cashdrawer not connected');
+	            var body = error ? error.data.debug : _t('Make sure Cashdrawer connected with IOT Box');
+	            self.pos.gui.show_popup('error-traceback', {
+	                'title': _t('Cashdrawer Error: ') + message,
+	                'body': body
+	            });
+	        });
+	        return done;
+	    },
+        
+        /*
             Stops acceptance of money
             @returns 0.00
         */
