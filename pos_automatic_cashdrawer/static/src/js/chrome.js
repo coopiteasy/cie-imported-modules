@@ -74,7 +74,7 @@ odoo.define('pos_automatic_cashdrawer.chrome', function (require) {
                                 self.pos.action_set_balance(inventory.total, 'start')
                                 .always(function () { framework.unblockUI(); });
                             }
-                        }).fail(function (error) {
+                        }).fail(function (type, error) {
                             self.gui.show_popup('error', {
                                 title: _t('Unable to syncronize inventory'),
                                 body: _t('Check that the Cashdrawer is online before starting the session, and refresh the browser.\n\n') + error.data.message,
